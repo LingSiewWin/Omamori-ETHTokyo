@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMAMORI - Traditional Savings Charm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.umd.min.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .cherry-blossom {
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f8b4cb' fill-opacity='0.1'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="gradient-bg cherry-blossom min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">🌸 OMAMORI 🌸</h1>
+            <p class="text-purple-100">Traditional Japanese savings charm meets DeFi</p>
+        </div>
+
+        <!-- Main Card -->
+        <div class="max-w-md mx-auto bg-white rounded-2xl shadow-2xl p-6">
+            <!-- Status Display -->
+            <div id="status" class="text-center mb-6 p-4 rounded-lg bg-gray-50">
+                <div id="connection-status" class="text-lg font-semibold text-gray-700">
+                    🔗 Connect MetaMask to start
+                </div>
+            </div>
+
+            <!-- Goal Form (hidden initially) -->
+            <div id="goal-form" class="hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">Set Your Goal</h2>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Goal</label>
+                    <input
+                        type="text"
+                        id="goal-input"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-purple-500"
+                        placeholder="e.g., Okinawa Trip"
+                        value="Okinawa"
+                    >
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Amount (¥)</label>
+                    <input
+                        type="number"
+                        id="amount-input"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-purple-500"
+                        placeholder="1000"
+                        value="1000"
+                    >
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Asset</label>
+                    <select
+                        id="asset-select"
+                        class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-purple-500"
+                    >
+                        <option value="USDC">USDC (Global)</option>
+                        <option value="JPYC">JPYC (Japan)</option>
+                    </select>
+                </div>
+
+                <button
+                    id="deposit-btn"
+                    class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg transition-colors"
+                >
+                    📿 Create Omamori & Sign Deposit
+                </button>
+            </div>
+
+            <!-- Connect Button -->
+            <button
+                id="connect-btn"
+                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-colors"
+            >
+                🦊 Connect MetaMask
+            </button>
+
+            <!-- NFT Display -->
+            <div id="nft-display" class="hidden mt-6 p-4 bg-pink-50 rounded-lg text-center">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">Your Omamori</h3>
+                <div class="text-6xl mb-2">🌸</div>
+                <div id="nft-info" class="text-sm text-gray-600"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 text-purple-100 text-sm">
+            Built for ETHTokyo 2025 • Where tradition meets innovation
+        </div>
+    </div>
+
+    <script>
+        let currentAccount = null;
+        let provider = null;
+        let signer = null;
+
+        // Contract addresses (will be updated after deployment)
+        const VAULT_ADDRESS = "0x..."; // Update after deployment
+        const NETWORK_CONFIG = {
+            chainId: "0x5A2", // 1442 in hex (Polygon zkEVM Testnet)
+            chainName: "Polygon zkEVM Testnet",
+            rpcUrls: ["https://rpc.polygon-zkevm-testnet.gelato.digital"],
+            blockExplorerUrls: ["https://testnet-zkevm.polygonscan.com/"]
+        };
+
+        // EIP-712 Domain
+        const domain = {
+            name: 'OmamoriVault',
+            version: '1',
+            chainId: 1442,
+            verifyingContract: VAULT_ADDRESS
+        };
+
+        // EIP-712 Types
+        const types = {
+            Deposit: [
+                { name: 'user', type: 'address' },
+                { name: 'amount', type: 'uint256' },
+                { name: 'asset', type: 'string' },
+                { name: 'goal', type: 'string' }
+            ]
+        };
+
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    alert('Please install MetaMask!');
+                    return;
+                }
+
+                provider = new ethers.BrowserProvider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+
+                // Switch to Polygon zkEVM if needed
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: NETWORK_CONFIG.chainId }]
+                    });
+                } catch (switchError) {
+                    if (switchError.code === 4902) {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [NETWORK_CONFIG]
+                        });
+                    }
+                }
+
+                signer = await provider.getSigner();
+                currentAccount = await signer.getAddress();
+
+                updateUI();
+                console.log('Connected account:', currentAccount);
+            } catch (error) {
+                console.error('Connection failed:', error);
+                document.getElementById('status').innerHTML =
+                    '<div class="text-red-600">Connection failed. Please try again.</div>';
+            }
+        }
+
+        async function signDeposit() {
+            try {
+                const goal = document.getElementById('goal-input').value;
+                const amount = document.getElementById('amount-input').value;
+                const asset = document.getElementById('asset-select').value;
+
+                if (!goal || !amount) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+
+                const value = {
+                    user: currentAccount,
+                    amount: ethers.parseUnits(amount, 0), // Treating as integer yen
+                    asset: asset,
+                    goal: goal
+                };
+
+                // Sign the typed data
+                const signature = await signer.signTypedData(domain, types, value);
+
+                console.log('Signature:', signature);
+
+                // Show success and mock NFT
+                document.getElementById('status').innerHTML =
+                    '<div class="text-green-600 font-semibold">✅ Deposit signed successfully!</div>';
+
+                showNFT(goal, amount, asset);
+
+                // In a real implementation, you would send this signature to your backend
+                // to process the deposit and mint the NFT
+
+            } catch (error) {
+                console.error('Signing failed:', error);
+                document.getElementById('status').innerHTML =
+                    '<div class="text-red-600">❌ Signing failed. Please try again.</div>';
+            }
+        }
+
+        function showNFT(goal, amount, asset) {
+            const nftDisplay = document.getElementById('nft-display');
+            const nftInfo = document.getElementById('nft-info');
+
+            nftInfo.innerHTML = `
+                <div><strong>Goal:</strong> ${goal}</div>
+                <div><strong>Amount:</strong> ¥${amount}</div>
+                <div><strong>Asset:</strong> ${asset}</div>
+                <div><strong>Level:</strong> Seed 🌱</div>
+                <div class="mt-2 text-xs">Your omamori will grow as you save more!</div>
+            `;
+
+            nftDisplay.classList.remove('hidden');
+        }
+
+        function updateUI() {
+            const connectBtn = document.getElementById('connect-btn');
+            const goalForm = document.getElementById('goal-form');
+            const status = document.getElementById('connection-status');
+
+            if (currentAccount) {
+                connectBtn.classList.add('hidden');
+                goalForm.classList.remove('hidden');
+                status.innerHTML = `🔗 Connected: ${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}`;
+            } else {
+                connectBtn.classList.remove('hidden');
+                goalForm.classList.add('hidden');
+                status.innerHTML = '🔗 Connect MetaMask to start';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('connect-btn').addEventListener('click', connectWallet);
+        document.getElementById('deposit-btn').addEventListener('click', signDeposit);
+
+        // Parse URL parameters from LINE bot
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('goal')) {
+            document.getElementById('goal-input').value = urlParams.get('goal');
+        }
+        if (urlParams.get('amount')) {
+            document.getElementById('amount-input').value = urlParams.get('amount');
+        }
+        if (urlParams.get('asset')) {
+            document.getElementById('asset-select').value = urlParams.get('asset');
+        }
+
+        // Initialize
+        updateUI();
+    </script>
+</body>
+</html>

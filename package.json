@@ -3,7 +3,14 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run scripts/deploy.ts --network zkevm",
+    "deploy-local": "npx hardhat run scripts/deploy.ts --network hardhat",
+    "bot": "ts-node bot/index.ts",
+    "bot:dev": "ts-node --watch bot/index.ts",
+    "serve": "python3 -m http.server 8000 --directory frontend",
+    "clean": "npx hardhat clean"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +27,6 @@
     "hardhat": "^3.0.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
-  }
+  },
+  "type": "module"
 }
