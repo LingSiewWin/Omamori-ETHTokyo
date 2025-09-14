@@ -1,12 +1,11 @@
-import { expect } from "chai";
-import { ethers } from "hardhat";
-import { OmamoriNFT, OmamoriVault } from "../typechain-types";
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
 
 describe("OMAMORI Contracts", function () {
-  let omamoriNFT: OmamoriNFT;
-  let omamoriVault: OmamoriVault;
-  let owner: any;
-  let user: any;
+  let omamoriNFT;
+  let omamoriVault;
+  let owner;
+  let user;
 
   beforeEach(async function () {
     [owner, user] = await ethers.getSigners();

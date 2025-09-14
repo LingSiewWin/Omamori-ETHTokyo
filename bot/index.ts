@@ -3,21 +3,28 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { createSubdomain, generateFrameMessage } from './ens';
 import { generateMilestoneProof, verifyMilestoneProof, getMilestoneThreshold, generatePrivacyMessage, isZKProofRequired } from './zkProof';
+import { createOmamoriEliza } from './eliza';
+import { mockTEE } from './tee';
 
-dotenv.config();
+dotenv.config({ path: '.env.local' });
 
 const config: MiddlewareConfig = {
-  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '',
-  channelSecret: process.env.LINE_CHANNEL_SECRET || ''
+  channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN!,
+  channelSecret: process.env.LINE_CHANNEL_SECRET!
 };
 
 const client = new Client(config);
 const app = express();
 
-// ElizaOS-inspired polite responses
+// Initialize ElizaOS with Japanese savings expertise
+const eliza = createOmamoriEliza();
+
+console.log('🤖 ElizaOS initialized:', eliza.getModelStatus());
+
+// Enhanced polite responses with ElizaOS integration
 const politeResponses = {
   greeting: 'こんにちは！私は貯蓄お守りボットです。目標を設定して、一緒に貯蓄しましょう！✨',
-  help: 'コマンド:\n・「¥1000貯めたい」- 貯蓄目標を設定\n・「進捗を教えて」- 進捗確認\n・「お疲れ様」- 応援メッセージ',
+  help: 'コマンド:\n・「¥1000貯めたい」- 貯蓄目標を設定\n・「進捗を教えて」- 進捗確認\n・「お疲れ様」- 応援メッセージ\n・「アドバイス」- AI貯蓄アドバイス',
   encouragement: 'お疲れ様です！小さな一歩が大きな成果につながります。頑張っていますね！🌸',
   unknown: 'すみません、よく分かりませんでした。「ヘルプ」と送信すると使い方が分かります。'
 };
@@ -59,7 +66,7 @@ function createDepositFlexMessage(amount: string, goal: string = 'Okinawa'): Fle
               action: {
                 type: 'uri',
                 label: 'USDC で貯蓄 (グローバル)',
-                uri: `https://omamori.app/deposit?goal=${goal}&amount=${amount}&asset=USDC`
+                uri: `http://localhost:8000?goal=${goal}&amount=${amount}&asset=USDC`
               }
             },
             {
@@ -69,7 +76,7 @@ function createDepositFlexMessage(amount: string, goal: string = 'Okinawa'): Fle
               action: {
                 type: 'uri',
                 label: 'JPYC で貯蓄 (日本)',
-                uri: `https://omamori.app/deposit?goal=${goal}&amount=${amount}&asset=JPYC`
+                uri: `http://localhost:8000?goal=${goal}&amount=${amount}&asset=JPYC`
               }
             }
           ]
@@ -136,31 +143,52 @@ async function handleMessage(event: WebhookEvent) {
     case 'save':
       if (amount) {
         const amountNum = parseInt(amount);
+        const goalName = goal || 'Okinawa';
 
-        // Check if ZK proof is required for privacy
-        if (isZKProofRequired(amountNum)) {
-          const zkProof = generateMilestoneProof({
-            amount: amountNum,
-            timestamp: Date.now(),
-            goal: goal || 'Okinawa',
-            privateNote: 'User savings milestone'
-          });
+        try {
+          // Generate AI advice using ElizaOS + TEE
+          const teeInput = `Provide savings advice for ¥${amount} for ${goalName}`;
+          const teeAdvice = await mockTEE(teeInput, 'savings_analysis');
+          const elizaResponse = eliza.provideSavingsAdvice(amountNum, goalName);
 
-          const privacyMessage = generatePrivacyMessage(Math.floor(amountNum / 25000));
-          replyMessage = [
-            { type: 'text', text: privacyMessage },
-            createDepositFlexMessage(amount, goal || 'Okinawa')
-          ];
-        } else {
-          replyMessage = createDepositFlexMessage(amount, goal || 'Okinawa');
+          // Combine TEE-verified advice with ElizaOS response
+          const combinedAdvice = `${elizaResponse.text}\n\n${teeAdvice}`;
+
+          // Check if ZK proof is required for privacy
+          if (isZKProofRequired(amountNum)) {
+            const zkProof = generateMilestoneProof({
+              amount: amountNum,
+              timestamp: Date.now(),
+              goal: goalName,
+              privateNote: 'User savings milestone'
+            });
+
+            const privacyMessage = generatePrivacyMessage(Math.floor(amountNum / 25000));
+            replyMessage = [
+              { type: 'text', text: combinedAdvice },
+              { type: 'text', text: privacyMessage },
+              createDepositFlexMessage(amount, goalName)
+            ];
+          } else {
+            replyMessage = [
+              { type: 'text', text: combinedAdvice },
+              createDepositFlexMessage(amount, goalName)
+            ];
+          }
+        } catch (error) {
+          console.error('ElizaOS/TEE error:', error);
+          // Fallback to simple response
+          replyMessage = createDepositFlexMessage(amount, goalName);
         }
       } else {
-        replyMessage = { type: 'text', text: '金額を教えてください。例: ¥1000貯めたい' };
+        const helpResponse = eliza.respond('金額を教えてください');
+        replyMessage = { type: 'text', text: helpResponse.text };
       }
       break;
 
     case 'greeting':
-      replyMessage = { type: 'text', text: politeResponses.greeting };
+      const greetingResponse = eliza.respond('こんにちは');
+      replyMessage = { type: 'text', text: greetingResponse.text };
       break;
 
     case 'help':
@@ -168,7 +196,8 @@ async function handleMessage(event: WebhookEvent) {
       break;
 
     case 'encouragement':
-      replyMessage = { type: 'text', text: politeResponses.encouragement };
+      const encouragementResponse = eliza.respond('お疲れ様', { tone: 'supportive' });
+      replyMessage = { type: 'text', text: encouragementResponse.text };
       break;
 
     case 'progress':
@@ -196,10 +225,17 @@ async function handleMessage(event: WebhookEvent) {
       break;
 
     default:
-      replyMessage = { type: 'text', text: politeResponses.unknown };
+      // Use ElizaOS for general conversation
+      try {
+        const elizaResponse = eliza.respond(event.message.text, { tone: 'polite' });
+        replyMessage = { type: 'text', text: elizaResponse.text };
+      } catch (error) {
+        console.error('ElizaOS general response error:', error);
+        replyMessage = { type: 'text', text: politeResponses.unknown };
+      }
   }
 
-  return client.replyMessage(event.replyToken, replyMessage);
+  return client.replyMessage(event.replyToken, replyMessage as any);
 }
 
 app.post('/webhook', middleware(config), (req, res) => {

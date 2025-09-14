@@ -51,3 +51,5 @@ coverage/
 
 # Markdown files
 *.md
+
+/demo
