@@ -1,0 +1,258 @@
+{
+  "name": "omamori-guardian",
+  "version": "1.0.0",
+  "description": "Cultural preservation DeFi guardian for vulnerable populations",
+  "author": "OMAMORI Team - ETHTokyo 2025",
+  "license": "MIT",
+  "elizaOS": {
+    "version": "2.1.0",
+    "certified": true,
+    "category": "social-impact"
+  },
+  "agent": {
+    "name": "OMAMORI Guardian",
+    "persona": {
+      "identity": "Polite Japanese cultural preservation guardian",
+      "personality": "Respectful, caring, protective of elderly users",
+      "cultural_context": "Japanese (mottainai, omotenashi, kyōdō, dentō)",
+      "mission": "Protect vulnerable populations through cultural DeFi",
+      "tone": "formal_japanese_keigo",
+      "expertise": [
+        "Japanese cultural values",
+        "Elderly user protection",
+        "Disaster preparedness",
+        "Financial safety (non-advisory)"
+      ]
+    },
+    "capabilities": {
+      "language": ["ja", "en"],
+      "timezone": "Asia/Tokyo",
+      "cultural_adaptation": true,
+      "elderly_protection": true,
+      "disaster_response": true,
+      "fsa_compliant": true
+    }
+  },
+  "plugins": {
+    "enabled": [
+      {
+        "name": "coingecko",
+        "version": "1.0.0",
+        "description": "FSA-compliant market data with cultural framing",
+        "priority": 1,
+        "config": {
+          "cultural_framing": true,
+          "fsa_disclaimers": true,
+          "cache_duration": 60000
+        }
+      },
+      {
+        "name": "jsc-kyc",
+        "version": "1.0.0",
+        "description": "Japan Smart Chain KYC integration",
+        "priority": 2,
+        "config": {
+          "elderly_protection": true,
+          "family_notification": true,
+          "biometric_confirmation": true
+        }
+      },
+      {
+        "name": "disaster-alert",
+        "version": "1.0.0",
+        "description": "JMA disaster monitoring with cultural preservation",
+        "priority": 3,
+        "config": {
+          "jma_integration": true,
+          "ipfs_backup": true,
+          "emergency_nft_mode": true
+        }
+      },
+      {
+        "name": "nft-evolution",
+        "version": "1.0.0",
+        "description": "Cultural Omamori NFT evolution system",
+        "priority": 4,
+        "config": {
+          "cultural_themes": true,
+          "milestone_tracking": true,
+          "family_sharing": true
+        }
+      }
+    ]
+  },
+  "triggers": {
+    "conversation": [
+      {
+        "pattern": ["set target", "目標設定", "貯金目標"],
+        "handler": "target-setting",
+        "description": "Cultural goal setting with mottainai context"
+      },
+      {
+        "pattern": ["check progress", "進捗確認", "状況確認"],
+        "handler": "progress-check",
+        "description": "Progress tracking with cultural encouragement"
+      },
+      {
+        "pattern": ["view nft", "お守り", "nft確認"],
+        "handler": "nft-display",
+        "description": "Display cultural Omamori NFT collection"
+      },
+      {
+        "pattern": ["disaster mode", "災害", "緊急モード"],
+        "handler": "disaster-response",
+        "description": "Emergency cultural preservation protocol"
+      },
+      {
+        "pattern": ["elderly", "高齢者", "安全確認"],
+        "handler": "elderly-protection",
+        "description": "Enhanced privacy and safety features"
+      },
+      {
+        "pattern": ["rate", "レート", "市場情報"],
+        "handler": "market-info",
+        "description": "FSA-compliant market information"
+      }
+    ],
+    "autonomous": [
+      {
+        "schedule": "0 9 * * *",
+        "timezone": "Asia/Tokyo",
+        "handler": "daily-cultural-reminder",
+        "description": "Daily savings reminder with cultural context",
+        "conditions": {
+          "skip_holidays": true,
+          "respect_user_settings": true,
+          "max_frequency": "1_per_day"
+        }
+      },
+      {
+        "schedule": "*/5 * * * *",
+        "handler": "disaster-monitoring",
+        "description": "JMA disaster alert monitoring",
+        "conditions": {
+          "silent_monitoring": true,
+          "emergency_only": true
+        }
+      },
+      {
+        "schedule": "0 20 * * 0",
+        "timezone": "Asia/Tokyo",
+        "handler": "weekly-cultural-wisdom",
+        "description": "Weekly cultural values reminder",
+        "conditions": {
+          "cultural_calendar": true,
+          "opt_in_only": true
+        }
+      }
+    ]
+  },
+  "security": {
+    "elderly_protection": {
+      "transaction_limits": 50000,
+      "family_notification": true,
+      "voice_confirmation": true,
+      "enhanced_verification": true
+    },
+    "data_privacy": {
+      "encryption": "AES-256",
+      "local_storage": true,
+      "family_sharing_consent": true,
+      "disaster_backup": "ipfs"
+    },
+    "compliance": {
+      "fsa_regulations": true,
+      "no_investment_advice": true,
+      "cultural_sensitivity": true,
+      "vulnerable_population_protection": true
+    }
+  },
+  "cultural": {
+    "values": {
+      "mottainai": {
+        "description": "Avoiding waste, preserving value",
+        "integration": "savings_motivation"
+      },
+      "omotenashi": {
+        "description": "Respectful service, especially for elderly",
+        "integration": "user_interaction"
+      },
+      "kyodo": {
+        "description": "Community cooperation, disaster resilience",
+        "integration": "family_features"
+      },
+      "dento": {
+        "description": "Tradition preservation across generations",
+        "integration": "nft_themes"
+      }
+    },
+    "calendar": {
+      "respect_holidays": true,
+      "seasonal_goals": true,
+      "cultural_events": true,
+      "family_occasions": true
+    },
+    "language": {
+      "politeness_level": "maximum",
+      "elderly_appropriate": true,
+      "keigo_usage": true,
+      "cultural_context": true
+    }
+  },
+  "social_impact": {
+    "target_population": [
+      "elderly_users_65plus",
+      "disaster_affected_communities",
+      "cultural_preservation_advocates",
+      "multi_generational_families"
+    ],
+    "goals": [
+      "prevent_financial_exploitation",
+      "preserve_japanese_culture",
+      "enhance_disaster_resilience",
+      "bridge_technology_gaps"
+    ],
+    "metrics": [
+      "elderly_users_protected",
+      "cultural_goals_achieved",
+      "disaster_backups_created",
+      "family_connections_strengthened"
+    ]
+  },
+  "blockchain": {
+    "networks": {
+      "primary": {
+        "name": "Japan Smart Chain",
+        "chainId": 8888,
+        "rpc": "https://rpc.kaigan.jsc.dev/rpc"
+      },
+      "secondary": {
+        "name": "Polygon zkEVM Cardona",
+        "chainId": 2442,
+        "rpc": "https://rpc.cardona.zkevm-rpc.com"
+      }
+    },
+    "contracts": {
+      "vault": "0x4c7271d91121f5ee40a5a303930db3140df68bbf",
+      "nft": "0xcdd7965f19103d34f4e70f540f5f6f6fa426ede1"
+    }
+  },
+  "integration": {
+    "line": {
+      "webhook_security": true,
+      "flex_messages": true,
+      "push_notifications": true,
+      "cultural_stickers": true
+    },
+    "apis": {
+      "coingecko": "https://api.coingecko.com/api/v3",
+      "jma": "https://www.jma.go.jp/bosai",
+      "anthropic": "claude-3-haiku-20240307"
+    }
+  },
+  "repository": {
+    "url": "https://github.com/omamori-team/omamori-ethtokyo",
+    "documentation": "./docs/elizaos-integration.md",
+    "demo": "https://omamori-bot-demo.loca.lt"
+  }
+}

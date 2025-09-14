@@ -15,7 +15,6 @@ yarn-error.log*
 artifacts/
 cache/
 typechain-types/
-deployments.json
 
 # IDEs
 .vscode/
@@ -49,9 +48,38 @@ temp/
 coverage/
 *.lcov
 
-# Markdown files
-*.md
-
+# Development artifacts
 /demo
 
 .env.example
+
+LICENSE
+
+# Next.js
+.next/
+out/
+
+# TypeScript build cache
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Lock files (keep package-lock.json, ignore others)
+bun.lock
+yarn.lock
+pnpm-lock.yaml
+
+# Large binary files
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.base64.txt
+*.rtf
+
+# Claude specific
+.claude/
+
+# Configuration files
+package.json
+package-lock.json
+tsconfig.json
