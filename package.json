@@ -21,6 +21,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.62.0",
     "@elizaos/core": "^1.5.8",
     "@line/bot-sdk": "^10.2.0",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
@@ -38,6 +39,7 @@
     "express": "^5.1.0",
     "framer-motion": "^12.23.12",
     "hardhat": "^2.22.0",
+    "node-cron": "^4.2.1",
     "postcss": "^8.5.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -58,7 +60,10 @@
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^4.3.20",
     "@types/mocha": "^10.0.10",
+    "circom": "^0.5.46",
+    "circomlib": "^2.0.5",
     "hardhat-gas-reporter": "^1.0.10",
+    "snarkjs": "^0.7.5",
     "solidity-coverage": "^0.8.16",
     "typechain": "^8.3.2"
   }

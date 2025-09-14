@@ -53,3 +53,5 @@ coverage/
 *.md
 
 /demo
+
+.env.example

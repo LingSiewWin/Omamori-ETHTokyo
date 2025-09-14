@@ -1,0 +1,13 @@
+{
+  "network": "polygon-zkevm-testnet",
+  "chainId": 1442,
+  "contracts": {
+    "OmamoriNFT": "0xcdd7965f19103d34f4e70f540f5f6f6fa426ede1",
+    "OmamoriVault": "0x4c7271d91121f5ee40a5a303930db3140df68bbf",
+    "USDC": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    "JPYC": "0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c"
+  },
+  "timestamp": "2025-09-14T04:58:36.482Z",
+  "status": "demo-deployment",
+  "note": "Mock addresses for ETHTokyo 2025 demo"
+}

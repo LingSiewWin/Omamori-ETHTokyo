@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OMAMORI - Network Debug Info</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f0f0f0; }
+        .section { background: white; margin: 10px 0; padding: 15px; border-radius: 8px; }
+        .safe { color: green; font-weight: bold; }
+        .warning { color: orange; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🔍 OMAMORI Network Analysis</h1>
+
+    <div class="section">
+        <h2>🏦 Your Wallet Accounts</h2>
+        <div class="safe">✅ Account 1: 0x992fEec8ECfaA9f3b1c5086202E171a399dD79Af</div>
+        <div class="safe">✅ Account 2: 0x90ab5DE6A21b000658bBF8aa2B0A95FF91e56C68</div>
+        <p>Both are YOUR personal accounts - you can switch between them in MetaMask</p>
+    </div>
+
+    <div class="section">
+        <h2>📜 Smart Contract Addresses</h2>
+        <div class="safe">✅ OmamoriVault: 0x4c7271d91121F5Ee40a5a303930db3140df68BbF</div>
+        <div class="safe">✅ OmamoriNFT: 0xcdd7965f19103d34f4e70f540f5f6f6fa426ede1</div>
+        <p>These are OUR deployed contracts on Polygon zkEVM Cardona TESTNET</p>
+        <p><strong>Status:</strong> <span class="safe">SAFE - No real money involved</span></p>
+    </div>
+
+    <div class="section">
+        <h2>🌐 Network Information</h2>
+        <div>Network: <span class="safe">Polygon zkEVM Cardona Testnet</span></div>
+        <div>Chain ID: <span class="safe">2442 (0x98a)</span></div>
+        <div>RPC: <span class="safe">https://rpc.cardona.zkevm-rpc.com</span></div>
+        <div>Explorer: <span class="safe">https://cardona-zkevm.polygonscan.com/</span></div>
+        <div>Currency: <span class="safe">Test ETH (worthless)</span></div>
+    </div>
+
+    <div class="section">
+        <h2>🔄 What's the Transaction?</h2>
+        <div class="warning">⚠️ This is NOT a real transfer between your accounts!</div>
+        <p>What actually happens:</p>
+        <ol>
+            <li>You (0x992f... or 0x90ab...) sign an <strong>EIP-712 message</strong></li>
+            <li>Message goes to our <strong>OmamoriVault contract</strong> (0x4c72...)</li>
+            <li>Contract would mint you an NFT (if deployed with funds)</li>
+            <li>No money moves between your accounts</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>🧪 Demo vs Real Mode</h2>
+        <div class="warning">Current Mode: DEMO SIGNATURE ONLY</div>
+        <p>What you're seeing in MetaMask:</p>
+        <ul>
+            <li><strong>"Amount: 1"</strong> = Your ¥1000 input (demo conversion)</li>
+            <li><strong>Contract: 0x4c72...</strong> = Our safe testnet contract</li>
+            <li><strong>Network: Should be zkEVM Cardona</strong> = Testnet (safe)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>🔧 Network Switch Issue</h2>
+        <div class="error">❌ Issue: App not forcing network switch properly</div>
+        <p><strong>What should happen:</strong></p>
+        <ol>
+            <li>Connect wallet on any network</li>
+            <li>App detects wrong network</li>
+            <li>App prompts: "Switch to Polygon zkEVM Cardona"</li>
+            <li>You accept network switch</li>
+            <li>Then proceed with demo signing</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>✅ Your Safety Checklist</h2>
+        <div class="safe">✅ No real ETH/tokens at risk</div>
+        <div class="safe">✅ Testnet-only contracts</div>
+        <div class="safe">✅ Demo signature mode</div>
+        <div class="safe">✅ Your accounts stay separate</div>
+        <div class="warning">⚠️ Fix needed: Proper network switching</div>
+    </div>
+
+    <button onclick="window.close()" style="padding: 10px 20px; font-size: 16px; margin-top: 20px;">
+        Got it! Close this window
+    </button>
+</body>
+</html>

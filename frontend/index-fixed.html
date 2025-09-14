@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMAMORI - Traditional Savings Charm</title>
+    <link rel="stylesheet" href="tailwind.min.css?v=2.0.0">
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.umd.min.js"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .cherry-blossom {
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f8b4cb' fill-opacity='0.1'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        .demo-badge {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 165, 0, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="gradient-bg cherry-blossom min-h-screen">
+    <!-- Demo Mode Indicator -->
+    <div class="demo-badge">🧪 TESTNET DEMO</div>
+
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header with Wallet Connection -->
+        <div class="flex justify-between items-center mb-8">
+            <div class="text-center flex-1">
+                <h1 class="text-4xl font-bold text-white mb-2">🌸 OMAMORI 🌸</h1>
+                <p class="text-purple-100">Traditional Japanese savings charm meets DeFi</p>
+            </div>
+
+            <!-- Wallet Status (Top Right) -->
+            <div id="wallet-status">
+                <button id="wallet-connect-btn" class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-2 px-4 rounded-lg transition-colors border border-white border-opacity-30">
+                    🦊 Connect Wallet
+                </button>
+                <div id="wallet-connected" class="hidden">
+                    <div class="bg-white bg-opacity-20 px-3 py-2 rounded-lg border border-white border-opacity-30 text-white text-sm">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                            <span id="wallet-address"></span>
+                        </div>
+                        <div class="text-xs opacity-75 mt-1">Polygon zkEVM Cardona</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="max-w-md mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+
+            <!-- Step 1: Connection State -->
+            <div id="step-connect" class="p-6">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">🔗</div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Connect Your Wallet</h2>
+                    <p class="text-gray-600 mb-6">Connect MetaMask to start your OMAMORI savings journey</p>
+                    <button id="main-connect-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                        🦊 Connect MetaMask
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Goal Setting -->
+            <div id="step-form" class="hidden p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Set Your Goal</h2>
+                    <button id="back-btn" class="text-gray-400 hover:text-gray-600 text-xl transition-colors" title="Back">
+                        ←
+                    </button>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Savings Goal</label>
+                    <input type="text" id="goal-input" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-purple-500" placeholder="e.g., Okinawa Trip">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Amount (¥)</label>
+                    <input type="number" id="amount-input" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-purple-500" placeholder="10000">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Currency</label>
+                    <select id="asset-select" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-purple-500">
+                        <option value="USDC">USDC (Global)</option>
+                        <option value="JPYC">JPYC (Japan)</option>
+                    </select>
+                </div>
+
+                <button id="review-btn" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                    Review Transaction
+                </button>
+            </div>
+
+            <!-- Step 3: Transaction Review -->
+            <div id="step-review" class="hidden p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Review</h2>
+                    <button id="edit-btn" class="text-gray-400 hover:text-gray-600 text-xl transition-colors" title="Edit">
+                        ✏️
+                    </button>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                    <h3 class="font-bold text-gray-800 mb-3">Transaction Details</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Goal:</span>
+                            <span id="review-goal" class="font-semibold"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Amount:</span>
+                            <span id="review-amount" class="font-semibold"></span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Currency:</span>
+                            <span id="review-asset" class="font-semibold"></span>
+                        </div>
+                        <hr class="my-2">
+                        <div class="flex justify-between text-orange-600">
+                            <span>Demo Mode:</span>
+                            <span>No real transaction</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button id="cancel-btn" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button id="sign-btn" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                        📿 Sign & Create Omamori
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Success -->
+            <div id="step-success" class="hidden p-6 text-center">
+                <div class="text-6xl mb-4">🌸</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Omamori Created!</h2>
+                <div class="bg-pink-50 p-4 rounded-lg mb-6">
+                    <div id="nft-details" class="text-sm text-gray-600"></div>
+                    <div class="mt-3 text-xs text-orange-600">
+                        🧪 Demo signature completed - no real transaction
+                    </div>
+                </div>
+                <button id="new-goal-btn" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                    Create Another Goal
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8 text-purple-100 text-sm">
+            Built for ETHTokyo 2025 • Where tradition meets innovation
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentAccount = null;
+        let provider = null;
+        let signer = null;
+        let currentStep = 'connect';
+
+        // Contract config
+        const VAULT_ADDRESS = "0x4c7271d91121f5ee40a5a303930db3140df68bbf";
+        const NETWORK_CONFIG = {
+            chainId: "0x98a",
+            chainName: "Polygon zkEVM Cardona Testnet",
+            nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+            rpcUrls: ["https://rpc.cardona.zkevm-rpc.com"],
+            blockExplorerUrls: ["https://cardona-zkevm.polygonscan.com/"]
+        };
+
+        const domain = { name: 'OmamoriVault', version: '1', chainId: 2442, verifyingContract: VAULT_ADDRESS };
+        const types = { Deposit: [
+            { name: 'user', type: 'address' },
+            { name: 'amount', type: 'uint256' },
+            { name: 'asset', type: 'string' },
+            { name: 'goal', type: 'string' }
+        ]};
+
+        // Step management
+        function showStep(step) {
+            const steps = ['connect', 'form', 'review', 'success'];
+            steps.forEach(s => {
+                document.getElementById(`step-${s}`).classList.add('hidden');
+            });
+            document.getElementById(`step-${step}`).classList.remove('hidden');
+            currentStep = step;
+        }
+
+        // Wallet connection with proper network checking
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    alert('Please install MetaMask!');
+                    return;
+                }
+
+                provider = new ethers.BrowserProvider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+
+                // Check current network
+                const network = await provider.getNetwork();
+                console.log('Current network:', network.chainId, network.name);
+
+                if (network.chainId !== 2442n) {
+                    alert(`🌐 Network Switch Required\n\nCurrently connected to: ${network.name || 'Unknown'} (${network.chainId})\nNeed to switch to: Polygon zkEVM Cardona Testnet (2442)\n\nClick OK to switch networks.`);
+
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: NETWORK_CONFIG.chainId }]
+                        });
+                    } catch (switchError) {
+                        console.log('Network switch error:', switchError.code);
+                        if (switchError.code === 4902 || switchError.code === -32603) {
+                            alert('🔧 Adding Polygon zkEVM Cardona Testnet to MetaMask...');
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [NETWORK_CONFIG]
+                            });
+                        } else {
+                            throw switchError;
+                        }
+                    }
+
+                    // Verify network switch
+                    const newNetwork = await provider.getNetwork();
+                    if (newNetwork.chainId !== 2442n) {
+                        alert('❌ Network switch failed. Please manually switch to Polygon zkEVM Cardona in MetaMask.');
+                        return;
+                    }
+                    alert('✅ Successfully connected to Polygon zkEVM Cardona Testnet!');
+                }
+
+                signer = await provider.getSigner();
+                currentAccount = await signer.getAddress();
+                console.log('Connected account:', currentAccount);
+                console.log('Network confirmed:', await provider.getNetwork());
+
+                updateWalletUI();
+                showStep('form');
+            } catch (error) {
+                console.error('Connection failed:', error);
+                alert(`Connection failed: ${error.message}`);
+            }
+        }
+
+        function updateWalletUI() {
+            const connectBtn = document.getElementById('wallet-connect-btn');
+            const connectedDiv = document.getElementById('wallet-connected');
+            const addressSpan = document.getElementById('wallet-address');
+
+            if (currentAccount) {
+                connectBtn.classList.add('hidden');
+                connectedDiv.classList.remove('hidden');
+                addressSpan.textContent = `${currentAccount.slice(0, 6)}...${currentAccount.slice(-4)}`;
+            } else {
+                connectBtn.classList.remove('hidden');
+                connectedDiv.classList.add('hidden');
+            }
+        }
+
+        function reviewTransaction() {
+            const goal = document.getElementById('goal-input').value;
+            const amount = document.getElementById('amount-input').value;
+            const asset = document.getElementById('asset-select').value;
+
+            if (!goal || !amount) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            document.getElementById('review-goal').textContent = goal;
+            document.getElementById('review-amount').textContent = `¥${parseInt(amount).toLocaleString()}`;
+            document.getElementById('review-asset').textContent = asset;
+
+            showStep('review');
+        }
+
+        async function signTransaction() {
+            try {
+                const goal = document.getElementById('goal-input').value;
+                const amount = document.getElementById('amount-input').value;
+                const asset = document.getElementById('asset-select').value;
+
+                const value = {
+                    user: currentAccount,
+                    amount: ethers.parseUnits(amount, 0),
+                    asset: asset,
+                    goal: goal
+                };
+
+                const signature = await signer.signTypedData(domain, types, value);
+                console.log('Demo signature:', signature);
+
+                document.getElementById('nft-details').innerHTML = `
+                    <div><strong>Goal:</strong> ${goal}</div>
+                    <div><strong>Amount:</strong> ¥${parseInt(amount).toLocaleString()}</div>
+                    <div><strong>Asset:</strong> ${asset}</div>
+                    <div><strong>Level:</strong> Seed 🌱</div>
+                    <div class="mt-2 text-xs">Your omamori will grow as you save more!</div>
+                `;
+
+                showStep('success');
+            } catch (error) {
+                console.error('Signing failed:', error);
+                alert('Signing cancelled or failed');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('wallet-connect-btn').addEventListener('click', connectWallet);
+        document.getElementById('main-connect-btn').addEventListener('click', connectWallet);
+        document.getElementById('review-btn').addEventListener('click', reviewTransaction);
+        document.getElementById('sign-btn').addEventListener('click', signTransaction);
+        document.getElementById('back-btn').addEventListener('click', () => showStep('form'));
+        document.getElementById('edit-btn').addEventListener('click', () => showStep('form'));
+        document.getElementById('cancel-btn').addEventListener('click', () => showStep('form'));
+        document.getElementById('new-goal-btn').addEventListener('click', () => {
+            document.getElementById('goal-input').value = '';
+            document.getElementById('amount-input').value = '';
+            showStep('form');
+        });
+
+        // URL parameter parsing
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('goal')) document.getElementById('goal-input').value = urlParams.get('goal');
+        if (urlParams.get('amount')) document.getElementById('amount-input').value = urlParams.get('amount');
+        if (urlParams.get('asset')) document.getElementById('asset-select').value = urlParams.get('asset');
+
+        // Initialize
+        showStep('connect');
+        updateWalletUI();
+    </script>
+</body>
+</html>
