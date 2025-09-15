@@ -1,5 +1,7 @@
 # 🌸 OMAMORI
 
+![OMAMORI Anshin App](assets/omamori-banner.png)
+
 **Cultural Preservation DeFi Platform with ElizaOS Integration**
 
 OMAMORI combines Japanese cultural values with Web3 savings through AI-driven behavior, real-time blockchain transactions, and LINE Bot integration. A complete DeFi platform featuring family inheritance planning and personalized AI agent conversations.
