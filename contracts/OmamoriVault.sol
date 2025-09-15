@@ -19,6 +19,11 @@ contract OmamoriVault is EIP712 {
     mapping(address => mapping(string => uint256)) public assetDeposits; // user => asset => amount
     mapping(address => string[]) public userGoals;
 
+    // Family inheritance system
+    mapping(address => address) public heirs; // owner => heir address
+    mapping(address => bool) public inheritanceActive; // whether inheritance is activated
+    mapping(address => uint256) public inheritanceTimestamp; // when inheritance was activated
+
     // ZK proof storage (mock for demo)
     mapping(address => bytes32) public zkProofs;
 
@@ -29,6 +34,11 @@ contract OmamoriVault is EIP712 {
     event DepositSigned(address indexed user, uint256 amount, string asset, string goal);
     event MilestoneVerified(address indexed user, bytes32 proof);
     event OmamoriUpgraded(address indexed user, uint256 milestone);
+
+    // Family inheritance events
+    event HeirDesignated(address indexed owner, address indexed heir, uint256 timestamp);
+    event InheritanceActivated(address indexed owner, address indexed heir, uint256 timestamp);
+    event InheritanceClaimed(address indexed heir, address indexed previousOwner, uint256 amount, uint256 nftTokenId);
 
     constructor(address _omamoriNFT) EIP712("OmamoriVault", "1") {
         omamoriNFT = OmamoriNFT(_omamoriNFT);
@@ -73,6 +83,84 @@ contract OmamoriVault is EIP712 {
         }
 
         emit DepositSigned(user, amount, asset, goal);
+    }
+
+    // Family inheritance functions
+    function designateHeir(address _heir) public {
+        require(_heir != address(0), "Invalid heir address");
+        require(_heir != msg.sender, "Cannot designate yourself as heir");
+
+        heirs[msg.sender] = _heir;
+        inheritanceActive[msg.sender] = false; // Reset if previously activated
+
+        emit HeirDesignated(msg.sender, _heir, block.timestamp);
+    }
+
+    function activateInheritance() public {
+        require(heirs[msg.sender] != address(0), "No heir designated");
+        require(!inheritanceActive[msg.sender], "Inheritance already activated");
+
+        inheritanceActive[msg.sender] = true;
+        inheritanceTimestamp[msg.sender] = block.timestamp;
+
+        emit InheritanceActivated(msg.sender, heirs[msg.sender], block.timestamp);
+    }
+
+    function claimInheritance(address _deceased) public {
+        require(heirs[_deceased] == msg.sender, "You are not the designated heir");
+        require(inheritanceActive[_deceased], "Inheritance not activated");
+
+        // In production, add time-based or oracle-based death verification
+        // For demo: allow immediate claiming for testing
+
+        uint256 inheritedAmount = totalDeposits[_deceased];
+        require(inheritedAmount > 0, "No deposits to inherit");
+
+        // Transfer deposits
+        totalDeposits[msg.sender] += inheritedAmount;
+        totalDeposits[_deceased] = 0;
+
+        // Transfer USDC deposits
+        uint256 usdcAmount = assetDeposits[_deceased]["USDC"];
+        if (usdcAmount > 0) {
+            assetDeposits[msg.sender]["USDC"] += usdcAmount;
+            assetDeposits[_deceased]["USDC"] = 0;
+        }
+
+        // Transfer JPYC deposits
+        uint256 jpycAmount = assetDeposits[_deceased]["JPYC"];
+        if (jpycAmount > 0) {
+            assetDeposits[msg.sender]["JPYC"] += jpycAmount;
+            assetDeposits[_deceased]["JPYC"] = 0;
+        }
+
+        // Transfer NFT if exists
+        uint256 nftTokenId = 0;
+        if (hasOmamori(_deceased)) {
+            (nftTokenId, , ) = omamoriNFT.getUserOmamori(_deceased);
+            // In production, implement NFT transfer logic
+            // For demo: just track the inheritance
+        }
+
+        // Clean up inheritance state
+        inheritanceActive[_deceased] = false;
+        heirs[_deceased] = address(0);
+
+        emit InheritanceClaimed(msg.sender, _deceased, inheritedAmount, nftTokenId);
+    }
+
+    function getInheritanceInfo(address _owner) public view returns (
+        address heir,
+        bool isActive,
+        uint256 activatedTimestamp,
+        uint256 totalAmount,
+        bool hasNFT
+    ) {
+        heir = heirs[_owner];
+        isActive = inheritanceActive[_owner];
+        activatedTimestamp = inheritanceTimestamp[_owner];
+        totalAmount = totalDeposits[_owner];
+        hasNFT = hasOmamori(_owner);
     }
 
     function submitZKProof(address user, bytes32 proof) public {

@@ -1,0 +1,76 @@
+{
+  "name": "jsc-kyc",
+  "version": "1.0.0",
+  "description": "Japan Smart Chain KYC integration with elderly protection",
+  "author": "OMAMORI Team",
+  "license": "MIT",
+  "elizaOS": {
+    "plugin": true,
+    "version": "2.1.0",
+    "category": "identity-privacy",
+    "certification": "elderly-protection"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "ethers": "^6.8.0"
+  },
+  "config": {
+    "jsc_rpc": "https://rpc.kaigan.jsc.dev/rpc",
+    "chain_id": 8888,
+    "mizuhiki_contract": "0x742d35Cc6639C0532fD8e3d7A1234567890abcdef",
+    "elderly_protection": true,
+    "family_notification": true,
+    "biometric_confirmation": true,
+    "transaction_limits": {
+      "elderly": 50000,
+      "standard": 1000000
+    }
+  },
+  "triggers": [
+    "elderly",
+    "高齢者",
+    "プライバシー",
+    "privacy",
+    "家族確認",
+    "安全確認",
+    "kyc",
+    "identity"
+  ],
+  "capabilities": [
+    "iPhone NFC KYC",
+    "elderly protection",
+    "family notification",
+    "biometric confirmation",
+    "privacy enhancement",
+    "cultural sensitivity"
+  ],
+  "privacy": {
+    "elderly_protection": {
+      "voice_confirmation": true,
+      "family_notification": true,
+      "enhanced_verification": true,
+      "transaction_limits": true
+    },
+    "biometric": {
+      "voice_patterns": true,
+      "nfc_tap_confirmation": true,
+      "family_verification": false
+    },
+    "data_protection": {
+      "local_storage": true,
+      "encryption": "AES-256",
+      "family_sharing_consent": true
+    }
+  },
+  "cultural": {
+    "values": ["omotenashi", "kyodo"],
+    "language": "respectful_keigo",
+    "context": "elderly_dignity_preservation"
+  },
+  "social_impact": {
+    "vulnerable_population_protection": true,
+    "financial_exploitation_prevention": true,
+    "family_unity_enhancement": true,
+    "technology_accessibility": true
+  }
+}

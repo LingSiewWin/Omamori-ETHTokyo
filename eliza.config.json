@@ -78,6 +78,19 @@
           "milestone_tracking": true,
           "family_sharing": true
         }
+      },
+      {
+        "name": "line",
+        "version": "1.0.0",
+        "description": "LINE Bot integration with transaction-gated access",
+        "priority": 5,
+        "config": {
+          "webhook_security": true,
+          "purchase_verification": true,
+          "personalized_agent": true,
+          "cultural_messaging": true,
+          "qr_connection": true
+        }
       }
     ]
   },

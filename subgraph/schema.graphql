@@ -1,0 +1,208 @@
+type User @entity {
+  id: ID! # wallet address
+  lineUserId: String
+  displayName: String
+  kycVerified: Boolean!
+  totalDeposits: BigInt!
+  depositCount: Int!
+  currentMilestone: Int!
+  hasOmamori: Boolean!
+  zkProof: Bytes
+
+  # Family relationships
+  familyGroup: FamilyGroup
+  isHeir: [Inheritance!]! @derivedFrom(field: "heir")
+  ownedInheritance: Inheritance @derivedFrom(field: "owner")
+
+  # Transactions
+  deposits: [Deposit!]! @derivedFrom(field: "user")
+  withdrawals: [Withdrawal!]! @derivedFrom(field: "user")
+  inheritanceClaims: [InheritanceClaim!]! @derivedFrom(field: "heir")
+
+  # Goals and assets
+  goals: [UserGoal!]! @derivedFrom(field: "user")
+  assetBalances: [AssetBalance!]! @derivedFrom(field: "user")
+
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type FamilyGroup @entity {
+  id: ID! # generated group ID
+  name: String!
+  creator: User!
+  members: [User!]!
+  totalSavings: BigInt!
+  savingsGoal: BigInt!
+  memberCount: Int!
+
+  # Aggregated data
+  totalDeposits: BigInt!
+  totalWithdrawals: BigInt!
+
+  # Transaction history
+  deposits: [Deposit!]! @derivedFrom(field: "familyGroup")
+
+  createdAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type Deposit @entity {
+  id: ID! # tx hash + log index
+  user: User!
+  amount: BigInt!
+  asset: String! # "JPYC" or "USDC"
+  goal: String!
+  signature: Bytes!
+
+  # Family context
+  familyGroup: FamilyGroup
+
+  # Blockchain data
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  gasUsed: BigInt!
+  gasPrice: BigInt!
+
+  # Derived milestone info
+  userMilestoneAfter: Int!
+  triggeredUpgrade: Boolean!
+}
+
+type Withdrawal @entity {
+  id: ID!
+  user: User!
+  amount: BigInt!
+  asset: String!
+  reason: String
+
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+}
+
+type Inheritance @entity {
+  id: ID! # owner address
+  owner: User!
+  heir: User!
+  isActive: Boolean!
+  activatedAt: BigInt
+  totalAmount: BigInt!
+
+  # Claims
+  claims: [InheritanceClaim!]! @derivedFrom(field: "inheritance")
+
+  designatedAt: BigInt!
+  updatedAt: BigInt!
+}
+
+type InheritanceClaim @entity {
+  id: ID! # tx hash
+  inheritance: Inheritance!
+  heir: User!
+  previousOwner: User!
+  amount: BigInt!
+  nftTokenId: BigInt
+
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+}
+
+type OmamoriUpgrade @entity {
+  id: ID! # tx hash + log index
+  user: User!
+  fromMilestone: Int!
+  toMilestone: Int!
+  totalDepositsAtUpgrade: BigInt!
+
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+}
+
+type UserGoal @entity {
+  id: ID! # user address + goal name
+  user: User!
+  goalName: String!
+  targetAmount: BigInt!
+  currentAmount: BigInt!
+  currency: String!
+  deadline: BigInt
+  isCompleted: Boolean!
+
+  # Related deposits
+  deposits: [Deposit!]! # filtered by goal
+
+  createdAt: BigInt!
+  completedAt: BigInt
+}
+
+type AssetBalance @entity {
+  id: ID! # user address + asset symbol
+  user: User!
+  asset: String! # "JPYC" or "USDC"
+  balance: BigInt!
+  depositCount: Int!
+  withdrawalCount: Int!
+
+  lastUpdated: BigInt!
+}
+
+type ZKProofSubmission @entity {
+  id: ID! # tx hash
+  user: User!
+  proof: Bytes!
+  milestone: Int!
+  verified: Boolean!
+
+  transactionHash: Bytes!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+}
+
+# Daily/aggregate stats for analytics
+type DailyStats @entity {
+  id: ID! # date YYYY-MM-DD
+  date: BigInt!
+
+  # Platform metrics
+  totalUsers: Int!
+  totalDeposits: BigInt!
+  totalDepositCount: Int!
+  newUsers: Int!
+  activeUsers: Int!
+
+  # Asset breakdowns
+  jpycDeposits: BigInt!
+  usdcDeposits: BigInt!
+
+  # Family metrics
+  familyGroups: Int!
+  familyDeposits: BigInt!
+  newInheritances: Int!
+
+  # Milestone metrics
+  totalUpgrades: Int!
+  usersAtMilestone0: Int!
+  usersAtMilestone1: Int!
+  usersAtMilestone2: Int!
+  usersAtMilestone3: Int!
+}
+
+# LINE Bot integration events
+type LineEvent @entity {
+  id: ID! # event timestamp + user
+  lineUserId: String!
+  user: User
+  eventType: String! # "message", "deposit_notification", etc.
+  content: String
+
+  # Associated blockchain data
+  relatedDeposit: Deposit
+  relatedInheritance: Inheritance
+
+  timestamp: BigInt!
+  processed: Boolean!
+}

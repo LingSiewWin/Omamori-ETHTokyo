@@ -1,0 +1,77 @@
+{
+  "name": "disaster-alert",
+  "version": "1.0.0",
+  "description": "JMA disaster monitoring with cultural preservation and IPFS backup",
+  "author": "OMAMORI Team",
+  "license": "MIT",
+  "elizaOS": {
+    "plugin": true,
+    "version": "2.1.0",
+    "category": "emergency-response",
+    "certification": "disaster-resilient"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "events": "^3.3.0",
+    "node-fetch": "^3.0.0"
+  },
+  "config": {
+    "jma_api_base": "https://www.jma.go.jp/bosai",
+    "earthquake_threshold": 5.0,
+    "intensity_threshold": 4,
+    "check_interval": 60000,
+    "max_retries": 3,
+    "ipfs_backup": true,
+    "emergency_nft_mode": true,
+    "family_notification": true
+  },
+  "triggers": [
+    "disaster",
+    "災害",
+    "災害モード",
+    "emergency",
+    "緊急",
+    "地震",
+    "津波",
+    "earthquake",
+    "tsunami"
+  ],
+  "capabilities": [
+    "JMA real-time monitoring",
+    "cultural memory protection",
+    "IPFS backup system",
+    "emergency NFT mode",
+    "family notification",
+    "disaster resilience"
+  ],
+  "disaster_response": {
+    "monitoring": {
+      "earthquake": true,
+      "tsunami": true,
+      "severe_weather": false,
+      "volcanic": false
+    },
+    "backup_systems": [
+      "ipfs",
+      "local_storage",
+      "family_notification"
+    ],
+    "emergency_protocols": [
+      "cultural_memory_protection",
+      "nft_disaster_mode",
+      "evacuation_guidance",
+      "family_coordination"
+    ]
+  },
+  "cultural": {
+    "values": ["kyodo", "dento"],
+    "context": "disaster_community_resilience",
+    "memory_preservation": true
+  },
+  "social_impact": {
+    "community_resilience": true,
+    "cultural_preservation": true,
+    "vulnerable_population_priority": true,
+    "disaster_preparedness": true
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "name": "coingecko",
+  "version": "1.0.0",
+  "description": "FSA-compliant market data with cultural mottainai framing",
+  "author": "OMAMORI Team",
+  "license": "MIT",
+  "elizaOS": {
+    "plugin": true,
+    "version": "2.1.0",
+    "category": "market-data",
+    "certification": "fsa-compliant"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "node-fetch": "^3.0.0"
+  },
+  "config": {
+    "api_endpoint": "https://api.coingecko.com/api/v3",
+    "rate_limit_ms": 2000,
+    "cache_duration": 60000,
+    "cultural_framing": true,
+    "fsa_disclaimers": true,
+    "supported_pairs": ["usd-coin/jpy", "ethereum/jpy", "bitcoin/jpy"]
+  },
+  "triggers": [
+    "rate",
+    "レート",
+    "市場情報",
+    "market info",
+    "price"
+  ],
+  "capabilities": [
+    "real-time market data",
+    "cultural context framing",
+    "FSA compliance",
+    "rate caching",
+    "mottainai messaging"
+  ],
+  "compliance": {
+    "fsa": {
+      "no_investment_advice": true,
+      "information_only": true,
+      "disclaimers_required": true,
+      "cultural_sensitivity": true
+    }
+  },
+  "cultural": {
+    "values": ["mottainai"],
+    "language": "polite_japanese",
+    "context": "value_preservation_not_speculation"
+  },
+  "social_impact": {
+    "elderly_friendly": true,
+    "prevents_exploitation": true,
+    "educational_focus": true
+  }
+}

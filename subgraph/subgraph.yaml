@@ -1,0 +1,94 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+
+dataSources:
+  - kind: ethereum
+    name: OmamoriVault
+    network: jsc-testnet # Japan Smart Chain testnet
+    source:
+      address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512" # from deployments.json
+      abi: OmamoriVault
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - Deposit
+        - Inheritance
+        - InheritanceClaim
+        - OmamoriUpgrade
+        - ZKProofSubmission
+        - AssetBalance
+        - UserGoal
+        - DailyStats
+      abis:
+        - name: OmamoriVault
+          file: ./abis/OmamoriVault.json
+        - name: OmamoriNFT
+          file: ./abis/OmamoriNFT.json
+      eventHandlers:
+        - event: DepositSigned(indexed address,uint256,string,string)
+          handler: handleDepositSigned
+        - event: HeirDesignated(indexed address,indexed address,uint256)
+          handler: handleHeirDesignated
+        - event: InheritanceActivated(indexed address,indexed address,uint256)
+          handler: handleInheritanceActivated
+        - event: InheritanceClaimed(indexed address,indexed address,uint256,uint256)
+          handler: handleInheritanceClaimed
+        - event: OmamoriUpgraded(indexed address,uint256)
+          handler: handleOmamoriUpgraded
+        - event: MilestoneVerified(indexed address,bytes32)
+          handler: handleMilestoneVerified
+      file: ./src/mapping.ts
+
+  - kind: ethereum
+    name: OmamoriNFT
+    network: jsc-testnet
+    source:
+      address: "0x5FbDB2315678afecb367f032d93F642f64180aa3" # from deployments.json
+      abi: OmamoriNFT
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - User
+        - OmamoriUpgrade
+      abis:
+        - name: OmamoriNFT
+          file: ./abis/OmamoriNFT.json
+        - name: OmamoriVault
+          file: ./abis/OmamoriVault.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleNFTTransfer
+        - event: OmamoriMinted(indexed address,string,uint256)
+          handler: handleOmamoriMinted
+      file: ./src/nft-mapping.ts
+
+templates:
+  - kind: ethereum/contract
+    name: FamilyGroupTemplate
+    network: jsc-testnet
+    source:
+      abi: FamilyGroup
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - FamilyGroup
+        - User
+      abis:
+        - name: FamilyGroup
+          file: ./abis/FamilyGroup.json
+      eventHandlers:
+        - event: MemberAdded(indexed address,string)
+          handler: handleMemberAdded
+        - event: GoalUpdated(uint256,string)
+          handler: handleGoalUpdated
+      file: ./src/family-mapping.ts

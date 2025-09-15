@@ -1,0 +1,102 @@
+{
+  "name": "nft-evolution",
+  "version": "1.0.0",
+  "description": "Cultural Omamori NFT evolution with milestone tracking and family sharing",
+  "author": "OMAMORI Team",
+  "license": "MIT",
+  "elizaOS": {
+    "plugin": true,
+    "version": "2.1.0",
+    "category": "cultural-nft",
+    "certification": "tradition-preservation"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "ethers": "^6.8.0"
+  },
+  "config": {
+    "nft_contract": "0xcdd7965f19103d34f4e70f540f5f6f6fa426ede1",
+    "chain_id": 8888,
+    "cultural_themes": true,
+    "milestone_tracking": true,
+    "family_sharing": true,
+    "seasonal_adaptations": true,
+    "evolution_stages": [
+      "seed",
+      "sprout",
+      "flower",
+      "bloom",
+      "wisdom"
+    ]
+  },
+  "triggers": [
+    "nft",
+    "omamori",
+    "お守り",
+    "view nft",
+    "show nft",
+    "nft確認",
+    "collection",
+    "コレクション"
+  ],
+  "capabilities": [
+    "cultural NFT evolution",
+    "milestone tracking",
+    "family sharing",
+    "seasonal themes",
+    "tradition preservation",
+    "multi-generational collection"
+  ],
+  "nft_system": {
+    "stages": {
+      "seed": {
+        "emoji": "🌰",
+        "description": "Beginning of cultural journey",
+        "requirements": "first_target_set",
+        "cultural_significance": "新しい始まり"
+      },
+      "sprout": {
+        "emoji": "🌱",
+        "description": "Growth through consistent savings",
+        "requirements": "¥10000_saved",
+        "cultural_significance": "継続の力"
+      },
+      "flower": {
+        "emoji": "🌺",
+        "description": "Blossoming cultural values",
+        "requirements": "¥50000_saved",
+        "cultural_significance": "文化の開花"
+      },
+      "bloom": {
+        "emoji": "🌸",
+        "description": "Full cultural preservation achieved",
+        "requirements": "¥100000_saved",
+        "cultural_significance": "完全な保護"
+      },
+      "wisdom": {
+        "emoji": "🏛️",
+        "description": "Generational wisdom keeper",
+        "requirements": "family_sharing_active",
+        "cultural_significance": "世代継承"
+      }
+    },
+    "themes": [
+      "seasonal_festivals",
+      "family_traditions",
+      "disaster_resilience",
+      "elderly_wisdom",
+      "community_bonds"
+    ]
+  },
+  "cultural": {
+    "values": ["dento", "kyodo"],
+    "context": "tradition_preservation_across_generations",
+    "family_integration": true
+  },
+  "social_impact": {
+    "cultural_preservation": true,
+    "family_bonding": true,
+    "tradition_transmission": true,
+    "community_building": true
+  }
+}

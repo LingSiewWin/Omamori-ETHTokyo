@@ -1,0 +1,54 @@
+{
+  "name": "Health Guardian Omamori",
+  "description": "A digital omamori blessed with traditional Japanese health protection values. This NFT evolves as you maintain consistent savings habits aligned with もったいない (mottainai) principles.",
+  "image": "ipfs://QmHealthOmamoriImage123/health-guardian.png",
+  "external_url": "https://omamori.cultural/health-guardian",
+  "attributes": [
+    {
+      "trait_type": "Cultural Value",
+      "value": "Health & Wellness"
+    },
+    {
+      "trait_type": "Traditional Blessing",
+      "value": "健康祈願 (Health Prayer)"
+    },
+    {
+      "trait_type": "Evolution Level",
+      "value": 1,
+      "max_value": 10
+    },
+    {
+      "trait_type": "Savings Streak",
+      "value": 0,
+      "display_type": "number"
+    },
+    {
+      "trait_type": "Cultural Score",
+      "value": 75,
+      "display_type": "boost_percentage"
+    },
+    {
+      "trait_type": "Mottainai Spirit",
+      "value": "Active"
+    },
+    {
+      "trait_type": "Protection Duration",
+      "value": "30 days"
+    },
+    {
+      "trait_type": "Shrine Origin",
+      "value": "Digital Meiji Shrine"
+    }
+  ],
+  "properties": {
+    "cultural_values": ["mottainai", "health", "tradition"],
+    "evolution_threshold": "¥15000",
+    "next_level_benefits": [
+      "Enhanced cultural wisdom",
+      "Exclusive LINE Bot features",
+      "Community recognition"
+    ],
+    "blockchain": "Japan Smart Chain",
+    "mizuhiki_verified": true
+  }
+}

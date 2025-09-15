@@ -1,62 +1,71 @@
-// Type definitions for OMAMORI ceremony components
-export interface OmamoriNFTData {
-  tokenId: string;
-  image: string;
-  goal: string;
-  milestone: number;
-  level: 'seed' | 'sprout' | 'flower' | 'full-bloom';
-}
-
-export interface CeremonyData {
-  nftImage: string;
+export interface UserGoal {
+  amount: number;
+  currency: 'JPYC' | 'USDC';
+  deadline: Date;
   title: string;
-  description: string;
-  aiMessage: string;
-  milestone: number;
-  goal: string;
 }
 
-export interface Web3State {
-  account: string | null;
-  provider: any;
-  signer: any;
-  isConnected: boolean;
-  chainId: number | null;
+export interface Plugin {
+  name: string;
+  execute: (input: any) => Promise<any>;
 }
 
-export interface DepositData {
-  goal: string;
-  amount: string;
-  asset: 'USDC' | 'JPYC';
-  signature?: string;
+export interface PluginConfig {
+  name: string;
+  config: any;
 }
 
-export type CeremonyStage = 'seal' | 'reveal' | 'achievement';
-
-export interface MilestoneThresholds {
-  seed: 0;
-  sprout: 10000;
-  flower: 50000;
-  fullBloom: 100000;
+export interface UserProfile {
+  targets?: Array<{
+    goal: string;
+    amount: number;
+    targetDate: string;
+    dailyTarget: number;
+  }>;
+  elderlyProtection?: boolean;
+  culturalWisdomOptIn?: boolean;
 }
 
-// Contract addresses
-export const CONTRACT_ADDRESSES = {
-  USDC: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-  JPYC: '0x6AE7Dfc73E0dDE2aa99ac063DcF7e8A63265108c', // Mock
-  VAULT: '', // To be set after deployment
-  NFT: '', // To be set after deployment
-} as const;
+export interface AutonomousBehavior {
+  trigger: any;
+  cronJob: any;
+  lastExecution: number | null;
+  executionCount: number;
+}
 
-// Network configuration
-export const POLYGON_ZKEVM_CONFIG = {
-  chainId: '0x5A2', // 1442 in hex
-  chainName: 'Polygon zkEVM Testnet',
-  rpcUrls: ['https://rpc.polygon-zkevm-testnet.gelato.digital'],
-  blockExplorerUrls: ['https://testnet-zkevm.polygonscan.com/'],
-  nativeCurrency: {
-    name: 'ETH',
-    symbol: 'ETH',
-    decimals: 18,
-  },
-} as const;
+export interface LineConfig {
+  channelAccessToken: string;
+  channelSecret: string;
+}
+
+export interface MessageParseResult {
+  command: 'save' | 'greeting' | 'help' | 'unknown';
+  amount?: string;
+}
+
+export interface SeasonalContext {
+  season: string;
+  emoji: string;
+  cultural_wisdom: string;
+}
+
+export interface PocketGoal {
+  id: string;
+  title: string;
+  amount: number;
+  targetAmount: number;
+  currency: 'JPYC' | 'USDC';
+  mascotType: 'cat' | 'character1' | 'character2';
+  progress: number;
+}
+
+export interface OmamoriState {
+  petals: number;
+  charmLevel: number;
+  coins: number;
+  zkProofEnabled: boolean;
+  elderMode: boolean;
+  lastWisdom: string;
+  connectedWallet: boolean;
+  pocketGoals: PocketGoal[];
+}
